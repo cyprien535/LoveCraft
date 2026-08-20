@@ -1,0 +1,25 @@
+# LoveCraft Robots.txt — Optimisé pour Google, Bing, ChatGPT, Perplexity & Claude
+
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /api/
+
+# AI Crawlers & Answer Engines (AEO / GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://lovecraft-app.vercel.app/sitemap.xml
