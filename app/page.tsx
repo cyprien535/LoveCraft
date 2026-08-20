@@ -46,6 +46,7 @@ export default function Page() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
   const [surprises, setSurprises] = useState<Surprise[]>([])
   const [query, setQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all')
@@ -71,6 +72,8 @@ export default function Page() {
         setScreen('dashboard')
         setForm(f => ({ ...f, sender: data.user.email?.split('@')[0] || '' }))
       }
+    }).catch(() => {
+      // L’utilisateur non connecté doit pouvoir consulter la page d’accueil.
     })
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
@@ -94,15 +97,53 @@ export default function Page() {
 
   async function auth() {
     setError('')
-    const result = authMode === 'login'
-      ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({ email, password })
-    
-    if (result.error) {
-      setError('Email ou mot de passe invalide. Veuillez vérifier vos informations.')
-    } else {
+    setNotice('')
+
+    const normalizedEmail = email.trim().toLowerCase()
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
+      return setError('Veuillez saisir une adresse email valide.')
+    }
+    if (password.length < 6) {
+      return setError('Le mot de passe doit contenir au moins 6 caractères.')
+    }
+
+    setAuthLoading(true)
+    try {
+      const result = authMode === 'login'
+        ? await supabase.auth.signInWithPassword({ email: normalizedEmail, password })
+        : await supabase.auth.signUp({
+            email: normalizedEmail,
+            password,
+            options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+          })
+
+      if (result.error) {
+        const message = result.error.message.toLowerCase()
+        if (message.includes('email not confirmed')) {
+          setError('Votre email n’est pas encore confirmé. Consultez votre boîte de réception.')
+        } else if (message.includes('already registered') || message.includes('already been registered')) {
+          setError('Cette adresse possède déjà un compte. Connectez-vous plutôt.')
+        } else {
+          setError(authMode === 'login'
+            ? 'Email ou mot de passe incorrect.'
+            : 'Impossible de créer le compte. Vérifiez votre email et réessayez.')
+        }
+        return
+      }
+
+      if (authMode === 'signup' && !result.data.session) {
+        setNotice('Compte créé. Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.')
+        setAuthMode('login')
+        setPassword('')
+        return
+      }
+
       setNotice('Connexion réussie !')
       setScreen('dashboard')
+    } catch {
+      setError('Le service d’authentification est momentanément indisponible. Vérifiez les réglages Supabase et réessayez.')
+    } finally {
+      setAuthLoading(false)
     }
   }
 
@@ -258,8 +299,8 @@ export default function Page() {
           />
           {error && <p className="form-error">{error}</p>}
           {notice && <p className="form-notice">{notice}</p>}
-          <button id="auth-submit" className="primary-btn auth-submit" onClick={auth}>
-            {authMode === 'signup' ? 'Créer mon espace' : 'Se connecter'} <LogIn size={15} />
+          <button id="auth-submit" className="primary-btn auth-submit" onClick={auth} disabled={authLoading}>
+            {authLoading ? 'Connexion en cours…' : authMode === 'signup' ? 'Créer mon espace' : 'Se connecter'} <LogIn size={15} />
           </button>
           <p className="auth-switch">
             {authMode === 'signup' ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
