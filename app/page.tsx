@@ -151,6 +151,23 @@ export default function Page() {
     }
   }
 
+  async function signInWithGoogle() {
+    setError('')
+    setNotice('')
+    setAuthLoading(true)
+    try {
+      const { error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      })
+      if (googleError) setError(`Google : ${googleError.message}`)
+    } catch {
+      setError('La connexion avec Google est momentanément indisponible.')
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
   async function save(publish = false) {
     if (!user || !form.title || !form.recipient || !form.sender || !form.message) {
       return setError('Veuillez compléter le titre, le destinataire, votre prénom (expéditeur) et le message.')
@@ -281,6 +298,14 @@ export default function Page() {
           <span className="eyebrow">{authMode === 'signup' ? 'Créer votre espace' : 'Ravi de vous revoir'}</span>
           <h2>{authMode === 'signup' ? 'Créez une surprise qui compte.' : 'Reconnectez-vous à vos émotions.'}</h2>
           <div style={{ height: 28 }} />
+          <button id="google-auth-btn" type="button" className="secondary-btn" style={{ width: '100%', justifyContent: 'center', marginBottom: 18 }} onClick={signInWithGoogle} disabled={authLoading}>
+            <span style={{ fontWeight: 800, fontSize: 16, color: '#4285F4' }}>G</span> Continuer avec Google
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, color: 'var(--muted-foreground)', fontSize: 11 }}>
+            <span style={{ height: 1, flex: 1, background: 'var(--border)' }} />
+            ou avec votre email
+            <span style={{ height: 1, flex: 1, background: 'var(--border)' }} />
+          </div>
           <label className="field-label">Adresse email</label>
           <input
             id="auth-email"
