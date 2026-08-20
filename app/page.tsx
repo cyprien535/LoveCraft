@@ -123,16 +123,20 @@ export default function Page() {
           setError('Votre email n’est pas encore confirmé. Consultez votre boîte de réception.')
         } else if (message.includes('already registered') || message.includes('already been registered')) {
           setError('Cette adresse possède déjà un compte. Connectez-vous plutôt.')
+        } else if (message.includes('password should be at least') || message.includes('password')) {
+          setError('Le mot de passe doit respecter la politique Supabase (au moins 6 caractères).')
+        } else if (message.includes('invalid api key') || message.includes('project not found') || message.includes('fetch')) {
+          setError('La connexion à Supabase est mal configurée sur Vercel. Vérifiez les variables NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.')
+        } else if (message.includes('email address') || message.includes('invalid email')) {
+          setError('Cette adresse email n’est pas acceptée par Supabase. Vérifiez son format.')
         } else {
-          setError(authMode === 'login'
-            ? 'Email ou mot de passe incorrect.'
-            : 'Impossible de créer le compte. Vérifiez votre email et réessayez.')
+          setError(`Supabase : ${result.error.message}`)
         }
         return
       }
 
       if (authMode === 'signup' && !result.data.session) {
-        setNotice('Compte créé. Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.')
+        setNotice('Compte créé. Si une confirmation est demandée, vérifiez votre email, puis connectez-vous.')
         setAuthMode('login')
         setPassword('')
         return
