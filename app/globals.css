@@ -259,6 +259,10 @@ img { display: block; max-width: 100%; }
 .theme-swatch.rose { background: var(--grad-rose); }
 .theme-swatch.lavender { background: var(--grad-lavender); }
 .theme-swatch.peach { background: var(--grad-peach); }
+.theme-swatch.green { background: linear-gradient(135deg, #dff4e8, #2f8060); }
+.theme-swatch.yellow { background: linear-gradient(135deg, #fff8d8, #d99b2b); }
+.theme-swatch.ocean { background: linear-gradient(135deg, #dff4f5, #247d91); }
+.theme-swatch.midnight { background: linear-gradient(135deg, #dfe4f4, #293455); }
 .theme-swatch.selected { box-shadow: 0 0 0 2.5px var(--primary); transform: scale(1.15); }
 
 /* ============================================================
@@ -531,6 +535,10 @@ img { display: block; max-width: 100%; }
 .preview-card.rose { background: var(--grad-rose); }
 .preview-card.lavender { background: var(--grad-lavender); }
 .preview-card.peach { background: var(--grad-peach); }
+.preview-card.green, .mockup-card.green, .sc-art.green { background: linear-gradient(135deg, #dff4e8, #2f8060); }
+.preview-card.yellow, .mockup-card.yellow, .sc-art.yellow { background: linear-gradient(135deg, #fff8d8, #d99b2b); }
+.preview-card.ocean, .mockup-card.ocean, .sc-art.ocean { background: linear-gradient(135deg, #dff4f5, #247d91); }
+.preview-card.midnight, .mockup-card.midnight, .sc-art.midnight { background: linear-gradient(135deg, #dfe4f4, #293455); }
 .preview-card.active { opacity: 1; transform: translateY(0) scale(1) rotate(-4deg); z-index: 2; pointer-events: auto; }
 .preview-card.prev { opacity: 0.3; transform: translateY(28px) scale(0.87) rotate(9deg); z-index: 1; }
 .preview-card small { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.72; }
@@ -1179,6 +1187,10 @@ img { display: block; max-width: 100%; }
 .reveal-page.rose { background: linear-gradient(135deg, #fdf0f3 0%, var(--background) 65%); }
 .reveal-page.lavender { background: linear-gradient(135deg, #f2f0f9 0%, var(--background) 65%); }
 .reveal-page.peach { background: linear-gradient(135deg, #fdf4ee 0%, var(--background) 65%); }
+.reveal-page.green { background: linear-gradient(135deg, #dff4e8 0%, var(--background) 65%); }
+.reveal-page.yellow { background: linear-gradient(135deg, #fff8d8 0%, var(--background) 65%); }
+.reveal-page.ocean { background: linear-gradient(135deg, #dff4f5 0%, var(--background) 65%); }
+.reveal-page.midnight { background: linear-gradient(135deg, #dfe4f4 0%, var(--background) 65%); }
 .reveal-page::before {
   content: '';
   position: absolute;

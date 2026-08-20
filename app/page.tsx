@@ -6,7 +6,7 @@ import {
   ArrowRight, BarChart3, Check, ChevronLeft, ChevronRight,
   Copy, Download, ExternalLink, Eye, Gift, Heart, LogIn, LogOut,
   Menu, Plus, QrCode, Search, Sparkles, Trash2, TrendingUp, X,
-  CopyPlus, Filter, Award, Share2, Music, Image as ImageIcon, Calendar, Smile, User, Shuffle
+  CopyPlus, Filter, Award, Share2, Music, Calendar, Smile, User, Shuffle
 } from 'lucide-react'
 import QRCode from 'qrcode'
 import { createClient } from '@/lib/supabase/client'
@@ -19,15 +19,15 @@ type Surprise = {
   occasion?: string; tone?: string; music_url?: string; photos?: string; unlock_date?: string
 }
 
-const themes = ['rose', 'lavender', 'peach']
+const themes = ['rose', 'lavender', 'peach', 'green', 'yellow', 'ocean', 'midnight']
 const occasions = ["Anniversaire", "Demande en mariage", "Saint-Valentin", "Déclaration", "Réconciliation", "Sans occasion"]
 const tones = ["Romantique", "Humoristique", "Poétique", "Nostalgique", "Émouvant"]
 
 const testimonials = [
-  { quote: "J'ai pu demander sa main d'une façon qui nous ressemblait vraiment. Elle a pleuré avant même de lire la fin.", author: "Thomas & Inès", occasion: "Demande en mariage" },
-  { quote: "On a transformé notre anniversaire à distance en un vrai rendez-vous. C'était doux, personnel, parfait.", author: "Sarah & Lucas", occasion: "Anniversaire de rencontre" },
-  { quote: "Le détail de la question secrète rend l'ouverture magique. On a gardé le lien comme un souvenir.", author: "Manon & Jade", occasion: "Une surprise sans occasion" },
-  { quote: "LoveCraft m'a permis de dire ce que je n'arrivais pas à exprimer de vive voix. Merci pour ça.", author: "Rémi & Céline", occasion: "Réconciliation" },
+  { quote: "J'ai demandé sa main d'une façon qui nous ressemblait vraiment. La surprise a rendu ce moment encore plus précieux.", author: "Aïcha & Arnaud", occasion: "Demande en mariage · Cotonou" },
+  { quote: "Pour notre anniversaire, LoveCraft nous a permis de créer un moment doux, personnel et plein de sens.", author: "Mireille & Cédric", occasion: "Anniversaire · Porto-Novo" },
+  { quote: "La question secrète rend l'ouverture magique. On a gardé le lien comme un souvenir de notre histoire.", author: "Grâce & Joël", occasion: "Une surprise sans occasion · Abomey-Calavi" },
+  { quote: "LoveCraft m'a permis de dire ce que je n'arrivais pas à exprimer de vive voix. C'était simple et sincère.", author: "Félicité & Wilfried", occasion: "Réconciliation · Parakou" },
 ]
 
 const previewCards = [
@@ -60,7 +60,7 @@ export default function Page() {
 
   const [form, setForm] = useState({
     title: '', recipient: '', sender: '', message: '', theme: 'rose',
-    question: 'Quel est notre endroit préféré ?', answer: '',
+    question: 'Dans quelle ville avons-nous partagé notre premier souvenir ?', answer: 'Cotonou',
     occasion: 'Anniversaire', tone: 'Romantique',
     music_url: '', photos: '', unlock_date: ''
   })
@@ -178,7 +178,7 @@ export default function Page() {
     setShowCreate(false)
     setForm({
       title: '', recipient: '', sender: user.email?.split('@')[0] || '', message: '', theme: 'rose',
-      question: 'Quel est notre endroit préféré ?', answer: '',
+      question: 'Dans quelle ville avons-nous partagé notre premier souvenir ?', answer: 'Cotonou',
       occasion: 'Anniversaire', tone: 'Romantique',
       music_url: '', photos: '', unlock_date: ''
     })
@@ -619,7 +619,7 @@ export default function Page() {
                 </div>
                 <div>
                   <label className="field-label">Réponse exacte</label>
-                  <input id="form-answer" className="text-input" value={form.answer} onChange={e => setForm({ ...form, answer: e.target.value })} placeholder="Ex: Paris" />
+                  <input id="form-answer" className="text-input" value={form.answer} onChange={e => setForm({ ...form, answer: e.target.value })} placeholder="Ex: Cotonou" />
                 </div>
               </div>
 
@@ -683,14 +683,6 @@ export default function Page() {
                 )}
               </div>
 
-              {/* 📸 Galerie Photos */}
-              <div>
-                <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <ImageIcon size={14} /> Galerie Souvenirs (URLs des photos séparées par des virgules)
-                </label>
-                <input className="text-input" value={form.photos} onChange={e => setForm({ ...form, photos: e.target.value })} placeholder="https://site.com/photo1.jpg, https://site.com/photo2.jpg" />
-              </div>
-
               {/* ⏳ Countdown Date */}
               <div>
                 <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -703,7 +695,7 @@ export default function Page() {
                 <label className="field-label">Thème visuel</label>
                 <div className="theme-picker">
                   {themes.map(theme => (
-                    <button key={theme} className={`theme-swatch ${theme} ${form.theme === theme ? 'selected' : ''}`} onClick={() => setForm({ ...form, theme })} />
+                    <button type="button" key={theme} title={`Thème ${theme}`} aria-label={`Choisir le thème ${theme}`} className={`theme-swatch ${theme} ${form.theme === theme ? 'selected' : ''}`} onClick={() => setForm({ ...form, theme })} />
                   ))}
                 </div>
               </div>
@@ -846,7 +838,6 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
             <a href="#fonctionnalites" onClick={() => setMenuOpen(false)}>Fonctionnalités</a>
             <a href="#processus" onClick={() => setMenuOpen(false)}>Comment ça marche</a>
             <a href="#temoignages" onClick={() => setMenuOpen(false)}>Histoires</a>
-            <a href="#tarifs" onClick={() => setMenuOpen(false)}>Tarifs</a>
             <div className="mobile-only-actions" style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
               <button className="secondary-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setMenuOpen(false); onAuth('login'); }}>
                 Se connecter
@@ -1020,31 +1011,6 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
         </div>
       </section>
 
-      <section id="tarifs" className="landing-pricing animate-on-scroll">
-        <div className="pricing-header">
-          <span className="eyebrow">Commencer simplement</span>
-          <h2>Une belle intention<br /><em>ne devrait pas coûter cher.</em></h2>
-        </div>
-        <div className="pricing-card">
-          <div className="pricing-top">
-            <span className="eyebrow">LoveCraft essentiel</span>
-            <div className="pricing-price">
-              <strong>Gratuit</strong>
-              <span>pour toujours</span>
-            </div>
-            <p>Pour créer vos premiers souvenirs sans friction.</p>
-          </div>
-          <ul className="pricing-features">
-            {['Surprises illimitées', 'Liens privés et QR codes', 'Statistiques de consultation', 'Aucun abonnement caché'].map(f => (
-              <li key={f}><Check size={15} /> {f}</li>
-            ))}
-          </ul>
-          <button id="pricing-cta-btn" className="primary-btn" onClick={() => onAuth('signup')}>
-            Créer mon espace <ArrowRight size={14} />
-          </button>
-        </div>
-      </section>
-
       <section className="landing-cta animate-on-scroll">
         <div className="cta-orb cta-orb-1" />
         <div className="cta-orb cta-orb-2" />
@@ -1066,7 +1032,6 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
           </div>
           <nav className="footer-nav">
             <a href="#fonctionnalites">Fonctionnalités</a>
-            <a href="#tarifs">Tarifs</a>
             <a href="#processus">Comment ça marche</a>
             <Link href="/story">Notre histoire</Link>
           </nav>

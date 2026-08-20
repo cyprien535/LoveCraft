@@ -159,6 +159,14 @@ export default function Reveal({ params }: { params: Promise<{ slug: string }> }
       grad.addColorStop(0, '#f2f0f9'); grad.addColorStop(0.5, '#6b6b9d'); grad.addColorStop(1, '#2d1929')
     } else if (item.theme === 'peach') {
       grad.addColorStop(0, '#fdf4ee'); grad.addColorStop(0.5, '#b8705f'); grad.addColorStop(1, '#2d1929')
+    } else if (item.theme === 'green') {
+      grad.addColorStop(0, '#e8f8ee'); grad.addColorStop(0.5, '#348567'); grad.addColorStop(1, '#153b35')
+    } else if (item.theme === 'yellow') {
+      grad.addColorStop(0, '#fff9dc'); grad.addColorStop(0.5, '#d29b32'); grad.addColorStop(1, '#5c3d1d')
+    } else if (item.theme === 'ocean') {
+      grad.addColorStop(0, '#e3f8f8'); grad.addColorStop(0.5, '#287f92'); grad.addColorStop(1, '#16354a')
+    } else if (item.theme === 'midnight') {
+      grad.addColorStop(0, '#e5e9fa'); grad.addColorStop(0.5, '#3d4f83'); grad.addColorStop(1, '#171d3b')
     } else {
       grad.addColorStop(0, '#fdf0f3'); grad.addColorStop(0.5, '#8f3b5a'); grad.addColorStop(1, '#2d1929')
     }
