@@ -5,7 +5,7 @@ import './globals.css'
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lovecraft.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://loveecraft.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
