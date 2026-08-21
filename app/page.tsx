@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
@@ -20,18 +20,19 @@ type Surprise = {
 }
 
 const themes = ['rose', 'lavender', 'peach', 'green', 'yellow', 'ocean', 'midnight']
-const occasions = ["Anniversaire", "Demande en mariage", "Saint-Valentin", "DÃ©claration", "RÃ©conciliation", "Sans occasion"]
-const tones = ["Romantique", "Humoristique", "PoÃ©tique", "Nostalgique", "Ã‰mouvant"]
+const occasions = ["Anniversaire", "Demande en mariage", "Saint-Valentin", "Déclaration", "Réconciliation", "Sans occasion"]
+const tones = ["Romantique", "Humoristique", "Poétique", "Nostalgique", "Émouvant"]
 
 const testimonials = [
-  { quote: "J'ai demandÃ© sa main d'une faÃ§on qui nous ressemblait vraiment. La surprise a rendu ce moment encore plus prÃ©cieux.", author: "AÃ¯cha & Arnaud", occasion: "Demande en mariage Â· Cotonou" },
-  { quote: "Pour notre anniversaire, LoveCraft nous a permis de crÃ©er un moment doux, personnel et plein de sens.", author: "Mireille & CÃ©dric", occasion: "Anniversaire Â· Porto-Novo" },
-  { quote: "La question secrÃ¨te rend l'ouverture magique. On a gardÃ© le lien comme un souvenir de notre histoire.", author: "GrÃ¢ce & JoÃ«l", occasion: "Une surprise sans occasion Â· Abomey-Calavi" },
-  { quote: "LoveCraft m'a permis de dire ce que je n'arrivais pas Ã  exprimer de vive voix. C'Ã©tait simple et sincÃ¨re.", author: "FÃ©licitÃ© & Wilfried", occasion: "RÃ©conciliation Â· Parakou" },
+  { quote: "J'ai demandé sa main d'une façon qui nous ressemblait vraiment. La surprise a rendu ce moment encore plus précieux.", author: "Codjo", occasion: "Demande en mariage" },
+  { quote: "Pour notre anniversaire, LoveCraft nous a permis de créer un moment doux, personnel et plein de sens.", author: "Aïcha", occasion: "Anniversaire" },
+  { quote: "La question secrète rend l'ouverture magique. On a gardé le lien comme un souvenir de notre histoire.", author: "Éric", occasion: "Surprise personnalisée" },
+  { quote: "LoveCraft m'a permis de dire ce que je n'arrivais pas à exprimer de vive voix. C'était simple et sincère.", author: "Vignon", occasion: "Déclaration d'amour" },
+  { quote: "Une expérience unique qui a suscité de vraies larmes de joie. L'effet de l'enveloppe et la musique sont magiques.", author: "Flora", occasion: "Lettre d'amour" },
 ]
 
 const previewCards = [
-  { theme: 'rose', for: 'Ã‰loÃ¯se', title: 'Tu es mon prÃ©fÃ©rÃ©', sub: 'avec tout mon amour' },
+  { theme: 'rose', for: 'Éloïse', title: 'Tu es mon préféré', sub: 'avec tout mon amour' },
   { theme: 'lavender', for: 'Mathieu', title: 'Une surprise pour toi', sub: 'pour tous nos lendemains' },
   { theme: 'peach', for: 'Sofia', title: 'Je t\'aime depuis toujours', sub: 'et pour toujours' },
 ]
@@ -60,7 +61,7 @@ export default function Page() {
 
   const [form, setForm] = useState({
     title: '', recipient: '', sender: '', message: '', theme: 'rose',
-    question: 'Dans quelle ville avons-nous partagÃ© notre premier souvenir ?', answer: 'Cotonou',
+    question: 'Dans quelle ville avons-nous partagé notre premier souvenir ?', answer: 'Cotonou',
     occasion: 'Anniversaire', tone: 'Romantique',
     music_url: '', photos: '', unlock_date: ''
   })
@@ -73,7 +74,7 @@ export default function Page() {
         setForm(f => ({ ...f, sender: data.user.email?.split('@')[0] || '' }))
       }
     }).catch(() => {
-      // Lâ€™utilisateur non connectÃ© doit pouvoir consulter la page dâ€™accueil.
+      // L’utilisateur non connecté doit pouvoir consulter la page d’accueil.
     })
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
@@ -104,31 +105,32 @@ export default function Page() {
       return setError('Veuillez saisir une adresse email valide.')
     }
     if (password.length < 6) {
-      return setError('Le mot de passe doit contenir au moins 6 caractÃ¨res.')
+      return setError('Le mot de passe doit contenir au moins 6 caractères.')
     }
 
     setAuthLoading(true)
     try {
+      const callbackUrl = `${window.location.origin}/auth/callback`
       const result = authMode === 'login'
         ? await supabase.auth.signInWithPassword({ email: normalizedEmail, password })
         : await supabase.auth.signUp({
             email: normalizedEmail,
             password,
-            options: { emailRedirectTo: 'https://love-craft-lrok.vercel.app/auth/callback' },
+            options: { emailRedirectTo: callbackUrl },
           })
 
       if (result.error) {
         const message = result.error.message.toLowerCase()
         if (message.includes('email not confirmed')) {
-          setError('Votre email nâ€™est pas encore confirmÃ©. Consultez votre boÃ®te de rÃ©ception.')
+          setError('Votre email n’est pas encore confirmé. Consultez votre boîte de réception.')
         } else if (message.includes('already registered') || message.includes('already been registered')) {
-          setError('Cette adresse possÃ¨de dÃ©jÃ  un compte. Connectez-vous plutÃ´t.')
+          setError('Cette adresse possède déjà un compte. Connectez-vous plutôt.')
         } else if (message.includes('password should be at least') || message.includes('password')) {
-          setError('Le mot de passe doit respecter la politique Supabase (au moins 6 caractÃ¨res).')
+          setError('Le mot de passe doit respecter la politique Supabase (au moins 6 caractères).')
         } else if (message.includes('invalid api key') || message.includes('project not found') || message.includes('fetch')) {
-          setError('La connexion Ã  Supabase est mal configurÃ©e sur Vercel. VÃ©rifiez les variables NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.')
+          setError('La connexion à Supabase est mal configurée sur Vercel. Vérifiez les variables NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.')
         } else if (message.includes('email address') || message.includes('invalid email')) {
-          setError('Cette adresse email nâ€™est pas acceptÃ©e par Supabase. VÃ©rifiez son format.')
+          setError('Cette adresse email n’est pas acceptée par Supabase. Vérifiez son format.')
         } else {
           setError(`Supabase : ${result.error.message}`)
         }
@@ -136,16 +138,16 @@ export default function Page() {
       }
 
       if (authMode === 'signup' && !result.data.session) {
-        setNotice('Compte crÃ©Ã©. Si une confirmation est demandÃ©e, vÃ©rifiez votre email, puis connectez-vous.')
+        setNotice('Compte créé. Si une confirmation est demandée, vérifiez votre email, puis connectez-vous.')
         setAuthMode('login')
         setPassword('')
         return
       }
 
-      setNotice('Connexion rÃ©ussie !')
+      setNotice('Connexion réussie !')
       setScreen('dashboard')
     } catch {
-      setError('Le service dâ€™authentification est momentanÃ©ment indisponible. VÃ©rifiez les rÃ©glages Supabase et rÃ©essayez.')
+      setError('Le service d’authentification est momentanément indisponible. Vérifiez les réglages Supabase et réessayez.')
     } finally {
       setAuthLoading(false)
     }
@@ -156,13 +158,14 @@ export default function Page() {
     setNotice('')
     setAuthLoading(true)
     try {
+      const callbackUrl = `${window.location.origin}/auth/callback`
       const { error: googleError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: 'https://love-craft-lrok.vercel.app/auth/callback' },
+        options: { redirectTo: callbackUrl },
       })
       if (googleError) setError(`Google : ${googleError.message}`)
     } catch {
-      setError('La connexion avec Google est momentanÃ©ment indisponible.')
+      setError('La connexion avec Google est momentanément indisponible.')
     } finally {
       setAuthLoading(false)
     }
@@ -170,7 +173,7 @@ export default function Page() {
 
   async function save(publish = false) {
     if (!user || !form.title || !form.recipient || !form.sender || !form.message) {
-      return setError('Veuillez complÃ©ter le titre, le destinataire, votre prÃ©nom (expÃ©diteur) et le message.')
+      return setError('Veuillez compléter le titre, le destinataire, votre prénom (expéditeur) et le message.')
     }
 
     // Determine final music URL
@@ -184,7 +187,7 @@ export default function Page() {
     const payload = {
       ...form,
       music_url: finalMusicUrl,
-      sender: form.sender || user.email?.split('@')[0] || 'Un Ãªtre cher',
+      sender: form.sender || user.email?.split('@')[0] || 'Un être cher',
       user_id: user.id,
       published: publish,
       unlock_date: form.unlock_date ? new Date(form.unlock_date).toISOString() : null
@@ -195,11 +198,11 @@ export default function Page() {
     setShowCreate(false)
     setForm({
       title: '', recipient: '', sender: user.email?.split('@')[0] || '', message: '', theme: 'rose',
-      question: 'Dans quelle ville avons-nous partagÃ© notre premier souvenir ?', answer: 'Cotonou',
+      question: 'Dans quelle ville avons-nous partagé notre premier souvenir ?', answer: 'Cotonou',
       occasion: 'Anniversaire', tone: 'Romantique',
       music_url: '', photos: '', unlock_date: ''
     })
-    setNotice(publish ? 'Votre surprise est publiÃ©e.' : 'Brouillon enregistrÃ©.')
+    setNotice(publish ? 'Votre surprise est publiée.' : 'Brouillon enregistré.')
     setError('')
     setTimeout(() => setNotice(''), 4000)
   }
@@ -209,7 +212,7 @@ export default function Page() {
     const newForm = {
       title: `${item.title} (Copie)`,
       recipient: item.recipient,
-      sender: item.sender || 'Un Ãªtre cher',
+      sender: item.sender || 'Un être cher',
       message: item.message,
       theme: item.theme,
       question: item.question,
@@ -225,7 +228,7 @@ export default function Page() {
     const { data, error: dupError } = await supabase.from('surprises').insert(newForm).select().single()
     if (!dupError && data) {
       setSurprises([data, ...surprises])
-      setNotice('Surprise dupliquÃ©e avec succÃ¨s !')
+      setNotice('Surprise dupliquée avec succès !')
       setTimeout(() => setNotice(''), 4000)
     }
   }
@@ -243,7 +246,7 @@ export default function Page() {
   function copyLink(slug: string) {
     const link = `${window.location.origin}/s/${slug}`
     navigator.clipboard.writeText(link)
-    setNotice('Lien copiÃ© dans le presse-papier !')
+    setNotice('Lien copié dans le presse-papier !')
     setTimeout(() => setNotice(''), 3500)
   }
 
@@ -278,25 +281,25 @@ export default function Page() {
     <main className="auth-page">
       <section className="auth-art">
         <button className="auth-back" onClick={() => setScreen('home')}>
-          <ChevronLeft size={16} /> Retour Ã  l'accueil
+          <ChevronLeft size={16} /> Retour à l'accueil
         </button>
         <div className="auth-art-content">
           <span className="eyebrow" style={{ color: 'rgba(240,200,208,0.65)' }}>Votre histoire commence ici</span>
-          <h1>Les plus beaux souvenirs sont ceux que l'on <em>crÃ©e ensemble.</em></h1>
+          <h1>Les plus beaux souvenirs sont ceux que l'on <em>crée ensemble.</em></h1>
           <p>Un espace doux pour transformer ce que vous ressentez en une surprise qui lui ressemble.</p>
         </div>
         <div className="auth-floating-cards">
           <div className="auth-fc rose auth-fc-1"><Heart size={18} fill="currentColor" /><span>pour toujours</span></div>
           <div className="auth-fc lavender auth-fc-2"><Heart size={14} fill="currentColor" /><span>avec amour</span></div>
-          <div className="auth-fc peach auth-fc-3"><span>une surprise â™¥</span></div>
+          <div className="auth-fc peach auth-fc-3"><span>une surprise ♥</span></div>
         </div>
       </section>
       <section className="auth-panel">
         <div className="auth-form-wrap">
           <Logo />
           <div style={{ height: 48 }} />
-          <span className="eyebrow">{authMode === 'signup' ? 'CrÃ©er votre espace' : 'Ravi de vous revoir'}</span>
-          <h2>{authMode === 'signup' ? 'CrÃ©ez une surprise qui compte.' : 'Reconnectez-vous Ã  vos Ã©motions.'}</h2>
+          <span className="eyebrow">{authMode === 'signup' ? 'Créer votre espace' : 'Ravi de vous revoir'}</span>
+          <h2>{authMode === 'signup' ? 'Créez une surprise qui compte.' : 'Reconnectez-vous à vos émotions.'}</h2>
           <div style={{ height: 28 }} />
           <button id="google-auth-btn" type="button" className="secondary-btn" style={{ width: '100%', justifyContent: 'center', marginBottom: 18 }} onClick={signInWithGoogle} disabled={authLoading}>
             <span style={{ fontWeight: 800, fontSize: 16, color: '#4285F4' }}>G</span> Continuer avec Google
@@ -323,18 +326,18 @@ export default function Page() {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+            placeholder="••••••••"
             onKeyDown={e => e.key === 'Enter' && auth()}
           />
           {error && <p className="form-error">{error}</p>}
           {notice && <p className="form-notice">{notice}</p>}
           <button id="auth-submit" className="primary-btn auth-submit" onClick={auth} disabled={authLoading}>
-            {authLoading ? 'Connexion en coursâ€¦' : authMode === 'signup' ? 'CrÃ©er mon espace' : 'Se connecter'} <LogIn size={15} />
+            {authLoading ? 'Connexion en cours…' : authMode === 'signup' ? 'Créer mon espace' : 'Se connecter'} <LogIn size={15} />
           </button>
           <p className="auth-switch">
-            {authMode === 'signup' ? 'DÃ©jÃ  un compte ?' : 'Pas encore de compte ?'}{' '}
+            {authMode === 'signup' ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
             <button onClick={() => setAuthMode(authMode === 'signup' ? 'login' : 'signup')}>
-              {authMode === 'signup' ? 'Se connecter' : 'CrÃ©er un compte'}
+              {authMode === 'signup' ? 'Se connecter' : 'Créer un compte'}
             </button>
           </p>
         </div>
@@ -366,7 +369,7 @@ export default function Page() {
             </div>
           </div>
           <button id="nav-logout" className="side-link side-link-danger" onClick={async () => { await supabase.auth.signOut(); setAuthMode('login'); setScreen('auth') }}>
-            <LogOut size={18} /> <span>DÃ©connexion</span>
+            <LogOut size={18} /> <span>Déconnexion</span>
           </button>
         </div>
       </aside>
@@ -375,7 +378,7 @@ export default function Page() {
         {/* Header */}
         <header className="dashboard-header">
           <div>
-            <p className="dashboard-eyebrow">Votre espace crÃ©atif</p>
+            <p className="dashboard-eyebrow">Votre espace créatif</p>
             <h1 className="dashboard-title">{activeTab === 'surprises' ? 'Mes surprises' : 'Statistiques & Performances'}</h1>
           </div>
           <button id="create-surprise-btn" className="create-btn" onClick={() => setShowCreate(true)}>
@@ -412,7 +415,7 @@ export default function Page() {
               <div className="kpi-card">
                 <div className="kpi-icon kpi-peach"><TrendingUp size={20} /></div>
                 <div>
-                  <span className="kpi-label">PubliÃ©es</span>
+                  <span className="kpi-label">Publiées</span>
                   <strong className="kpi-value">{surprises.filter(s => s.published).length}</strong>
                 </div>
               </div>
@@ -422,8 +425,8 @@ export default function Page() {
             <section className="welcome-banner">
               <div className="banner-content">
                 <span className="banner-kicker"><Sparkles size={13} /> L'atelier est ouvert</span>
-                <h2>Une belle Ã©motion mÃ©rite<br /><em>une belle histoire.</em></h2>
-                <p>CrÃ©ez une surprise digitale qui ressemble vraiment Ã  votre relation.</p>
+                <h2>Une belle émotion mérite<br /><em>une belle histoire.</em></h2>
+                <p>Créez une surprise digitale qui ressemble vraiment à votre relation.</p>
                 <button className="banner-button" onClick={() => setShowCreate(true)}>
                   Nouvelle surprise <Plus size={14} />
                 </button>
@@ -441,7 +444,7 @@ export default function Page() {
             <div className="section-toolbar">
               <div>
                 <p className="dashboard-eyebrow">Votre collection</p>
-                <h2 className="section-title">CrÃ©ations <span className="badge">{shown.length}</span></h2>
+                <h2 className="section-title">Créations <span className="badge">{shown.length}</span></h2>
               </div>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                 <select
@@ -451,7 +454,7 @@ export default function Page() {
                   style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', fontSize: 12, color: 'var(--foreground)' }}
                 >
                   <option value="all">Tous les statuts</option>
-                  <option value="published">PubliÃ©es uniquement</option>
+                  <option value="published">Publiées uniquement</option>
                   <option value="draft">Brouillons uniquement</option>
                 </select>
 
@@ -461,7 +464,7 @@ export default function Page() {
                   onChange={e => setSortBy(e.target.value as any)}
                   style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', fontSize: 12, color: 'var(--foreground)' }}
                 >
-                  <option value="recent">Plus rÃ©cents</option>
+                  <option value="recent">Plus récents</option>
                   <option value="views">Plus vues</option>
                   <option value="title">Titre (A-Z)</option>
                 </select>
@@ -482,10 +485,10 @@ export default function Page() {
                     <div className="sc-header">
                       <strong className="sc-title">{item.title}</strong>
                       <span className={`sc-status ${item.published ? 'published' : 'draft'}`}>
-                        <span className="status-dot" />{item.published ? 'PubliÃ©e' : 'Brouillon'}
+                        <span className="status-dot" />{item.published ? 'Publiée' : 'Brouillon'}
                       </span>
                     </div>
-                    <p className="sc-sub">Pour {item.recipient} {item.sender && <small style={{ opacity: 0.8 }}>Â· De la part de {item.sender}</small>}</p>
+                    <p className="sc-sub">Pour {item.recipient} {item.sender && <small style={{ opacity: 0.8 }}>· De la part de {item.sender}</small>}</p>
 
                     {/* Occasion and Tone pills */}
                     <div style={{ display: 'flex', gap: 6, margin: '8px 0 12px', flexWrap: 'wrap' }}>
@@ -496,8 +499,8 @@ export default function Page() {
                     <div className="sc-footer">
                       <span className="sc-views"><Eye size={12} /> {item.views ?? 0} vues</span>
                       <div className="sc-actions">
-                        <button className="icon-btn" title="AperÃ§u en direct" onClick={() => setPreviewModalItem(item)}><Eye size={15} /></button>
-                        <button className="icon-btn" title="GÃ©nÃ©rer QR Code" onClick={() => openQrModal(item)}><QrCode size={15} /></button>
+                        <button className="icon-btn" title="Aperçu en direct" onClick={() => setPreviewModalItem(item)}><Eye size={15} /></button>
+                        <button className="icon-btn" title="Générer QR Code" onClick={() => openQrModal(item)}><QrCode size={15} /></button>
                         <button className="icon-btn" title="Copier le lien" onClick={() => copyLink(item.slug)}><Copy size={15} /></button>
                         <button className="icon-btn" title="Dupliquer" onClick={() => duplicateSurprise(item)}><CopyPlus size={15} /></button>
                         <button className="icon-btn danger" title="Supprimer" onClick={() => remove(item.id)}><Trash2 size={15} /></button>
@@ -509,9 +512,9 @@ export default function Page() {
               {!shown.length && (
                 <div className="empty-state">
                   <div className="empty-icon"><Heart size={32} /></div>
-                  <h3>Aucune surprise trouvÃ©e</h3>
-                  <p>Ajustez vos filtres ou crÃ©ez votre premiÃ¨re surprise dÃ¨s maintenant.</p>
-                  <button className="primary-btn" onClick={() => setShowCreate(true)}>CrÃ©er une surprise <Plus size={14} /></button>
+                  <h3>Aucune surprise trouvée</h3>
+                  <p>Ajustez vos filtres ou créez votre première surprise dès maintenant.</p>
+                  <button className="primary-btn" onClick={() => setShowCreate(true)}>Créer une surprise <Plus size={14} /></button>
                 </div>
               )}
             </div>
@@ -525,7 +528,7 @@ export default function Page() {
               <div className="kpi-card">
                 <div className="kpi-icon kpi-violet"><Eye size={22} /></div>
                 <div>
-                  <span className="kpi-label">Vues cumulÃ©es</span>
+                  <span className="kpi-label">Vues cumulées</span>
                   <strong className="kpi-value">{totalViews}</strong>
                 </div>
               </div>
@@ -557,7 +560,7 @@ export default function Page() {
                   return (
                     <div key={s.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 600 }}>
-                        <span>{s.title} <small style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>pour {s.recipient} (par {s.sender || 'CrÃ©ateur'})</small></span>
+                        <span>{s.title} <small style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>pour {s.recipient} (par {s.sender || 'Créateur'})</small></span>
                         <span>{s.views ?? 0} vues</span>
                       </div>
                       <div style={{ height: 10, width: '100%', background: 'var(--secondary)', borderRadius: 99, overflow: 'hidden' }}>
@@ -566,20 +569,20 @@ export default function Page() {
                     </div>
                   )
                 })}
-                {!surprises.length && <p style={{ color: 'var(--muted-foreground)', fontSize: 13 }}>Aucune donnÃ©e Ã  afficher.</p>}
+                {!surprises.length && <p style={{ color: 'var(--muted-foreground)', fontSize: 13 }}>Aucune donnée à afficher.</p>}
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Modal CrÃ©ation AvancÃ©e */}
+      {/* Modal Création Avancée */}
       {showCreate && (
         <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setShowCreate(false)}>
           <section className="modal" style={{ maxWidth: 620, maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <div>
-                <span className="eyebrow">Atelier crÃ©atif</span>
+                <span className="eyebrow">Atelier créatif</span>
                 <h2>Composez votre surprise</h2>
               </div>
               <button className="icon-btn" onClick={() => setShowCreate(false)}><X size={16} /></button>
@@ -627,31 +630,31 @@ export default function Page() {
                   <input id="form-recipient" className="text-input" value={form.recipient} onChange={e => setForm({ ...form, recipient: e.target.value })} placeholder="Ex: Camille" />
                 </div>
                 <div>
-                  <label className="field-label">De la part de ? (Votre nom/prÃ©nom)</label>
+                  <label className="field-label">De la part de ? (Votre nom/prénom)</label>
                   <input id="form-sender" className="text-input" value={form.sender} onChange={e => setForm({ ...form, sender: e.target.value })} placeholder="Ex: Lucas" />
                 </div>
               </div>
 
               <div>
                 <label className="field-label">Votre message secret</label>
-                <textarea id="form-message" className="text-input text-area" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Ã‰crivez ce que vous ressentez du plus profond de votre cÅ“ur..." />
+                <textarea id="form-message" className="text-input text-area" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Écrivez ce que vous ressentez du plus profond de votre cœur..." />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <label className="field-label">Question secrÃ¨te (dÃ©verrouillage)</label>
-                  <input id="form-question" className="text-input" value={form.question} onChange={e => setForm({ ...form, question: e.target.value })} placeholder="Ex: Quel est notre endroit prÃ©fÃ©rÃ© ?" />
+                  <label className="field-label">Question secrète (déverrouillage)</label>
+                  <input id="form-question" className="text-input" value={form.question} onChange={e => setForm({ ...form, question: e.target.value })} placeholder="Ex: Quel est notre endroit préféré ?" />
                 </div>
                 <div>
-                  <label className="field-label">RÃ©ponse exacte</label>
+                  <label className="field-label">Réponse exacte</label>
                   <input id="form-answer" className="text-input" value={form.answer} onChange={e => setForm({ ...form, answer: e.target.value })} placeholder="Ex: Cotonou" />
                 </div>
               </div>
 
-              {/* ðŸŽµ SÃ©lection Audio / Fond Musical */}
+              {/* 🎵 Sélection Audio / Fond Musical */}
               <div>
                 <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Music size={14} /> Fond musical (3 musiques complÃ¨tes pour le ton "{form.tone}")
+                  <Music size={14} /> Fond musical (3 musiques complètes pour le ton "{form.tone}")
                 </label>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                   <button
@@ -660,7 +663,7 @@ export default function Page() {
                     style={{ fontSize: 12, padding: '6px 12px', background: musicChoiceMode === 'random' ? 'var(--secondary)' : 'white', borderColor: musicChoiceMode === 'random' ? 'var(--primary)' : 'var(--border)' }}
                     onClick={() => setMusicChoiceMode('random')}
                   >
-                    <Shuffle size={13} /> AlÃ©atoire
+                    <Shuffle size={13} /> Aléatoire
                   </button>
                   <button
                     type="button"
@@ -682,7 +685,7 @@ export default function Page() {
 
                 {musicChoiceMode === 'random' && (
                   <p style={{ fontSize: 12, color: 'var(--muted-foreground)', margin: '4px 0 16px' }}>
-                    âœ¨ LoveCraft choisira automatiquement l'une des 3 meilleures mÃ©lodies complÃ¨tes de ton <strong>{form.tone}</strong>.
+                    ✨ LoveCraft choisira automatiquement l'une des 3 meilleures mélodies complètes de ton <strong>{form.tone}</strong>.
                   </p>
                 )}
 
@@ -708,19 +711,19 @@ export default function Page() {
                 )}
               </div>
 
-              {/* â³ Countdown Date */}
+              {/* ⏳ Countdown Date */}
               <div>
                 <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Calendar size={14} /> DÃ©verrouillage programmÃ© (Optionnel)
+                  <Calendar size={14} /> Déverrouillage programmé (Optionnel)
                 </label>
                 <input type="datetime-local" className="text-input" value={form.unlock_date} onChange={e => setForm({ ...form, unlock_date: e.target.value })} />
               </div>
 
               <div>
-                <label className="field-label">ThÃ¨me visuel</label>
+                <label className="field-label">Thème visuel</label>
                 <div className="theme-picker">
                   {themes.map(theme => (
-                    <button type="button" key={theme} title={`ThÃ¨me ${theme}`} aria-label={`Choisir le thÃ¨me ${theme}`} className={`theme-swatch ${theme} ${form.theme === theme ? 'selected' : ''}`} onClick={() => setForm({ ...form, theme })} />
+                    <button type="button" key={theme} title={`Thème ${theme}`} aria-label={`Choisir le thème ${theme}`} className={`theme-swatch ${theme} ${form.theme === theme ? 'selected' : ''}`} onClick={() => setForm({ ...form, theme })} />
                   ))}
                 </div>
               </div>
@@ -750,7 +753,7 @@ export default function Page() {
 
             <img src={qrModalItem.urlData} alt="QR code" style={{ marginTop: 20, width: 220, height: 220, borderRadius: 16, border: '1px solid var(--border)', padding: 8, background: 'white' }} />
 
-            <p style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>Scannez ce QR Code pour accÃ©der directement Ã  la surprise de <strong>{qrModalItem.item.recipient}</strong>.</p>
+            <p style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>Scannez ce QR Code pour accéder directement à la surprise de <strong>{qrModalItem.item.recipient}</strong>.</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 8 }}>
               <a
@@ -759,7 +762,7 @@ export default function Page() {
                 className="primary-btn"
                 style={{ justifyContent: 'center', width: '100%' }}
               >
-                <Download size={15} /> TÃ©lÃ©charger le QR Code (PNG)
+                <Download size={15} /> Télécharger le QR Code (PNG)
               </a>
 
               <button
@@ -784,12 +787,12 @@ export default function Page() {
         </div>
       )}
 
-      {/* Modal AperÃ§u Direct */}
+      {/* Modal Aperçu Direct */}
       {previewModalItem && (
         <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setPreviewModalItem(null)}>
           <section className="modal" style={{ maxWidth: 520, padding: 36, textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <span className="eyebrow">AperÃ§u en direct</span>
+              <span className="eyebrow">Aperçu en direct</span>
               <button className="icon-btn" onClick={() => setPreviewModalItem(null)}><X size={16} /></button>
             </div>
 
@@ -799,7 +802,7 @@ export default function Page() {
 
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 28, marginBottom: 8 }}>{previewModalItem.title}</h2>
             <p style={{ color: 'var(--muted-foreground)', fontSize: 13, marginBottom: 20 }}>
-              DestinÃ© Ã  <strong>{previewModalItem.recipient}</strong> de la part de <strong>{previewModalItem.sender || 'Un Ãªtre cher'}</strong>
+              Destiné à <strong>{previewModalItem.recipient}</strong> de la part de <strong>{previewModalItem.sender || 'Un être cher'}</strong>
             </p>
 
             <div style={{ background: 'var(--secondary)', padding: 20, borderRadius: 14, textStyle: 'italic', fontFamily: 'Playfair Display, serif', fontSize: 17, color: 'var(--foreground)', marginBottom: 24, textAlign: 'left', whiteSpace: 'pre-wrap' }}>
@@ -809,7 +812,7 @@ export default function Page() {
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
               <button className="secondary-btn" onClick={() => setPreviewModalItem(null)}>Fermer</button>
               <a href={`/s/${previewModalItem.slug}`} target="_blank" rel="noreferrer" className="primary-btn">
-                Ouvrir la page complÃ¨te <ExternalLink size={14} />
+                Ouvrir la page complète <ExternalLink size={14} />
               </a>
             </div>
           </section>
@@ -860,8 +863,8 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
         <div className="nav-inner">
           <Logo />
           <div className={`landing-links${menuOpen ? ' open' : ''}`}>
-            <a href="#fonctionnalites" onClick={() => setMenuOpen(false)}>FonctionnalitÃ©s</a>
-            <a href="#processus" onClick={() => setMenuOpen(false)}>Comment Ã§a marche</a>
+            <a href="#fonctionnalites" onClick={() => setMenuOpen(false)}>Fonctionnalités</a>
+            <a href="#processus" onClick={() => setMenuOpen(false)}>Comment ça marche</a>
             <a href="#temoignages" onClick={() => setMenuOpen(false)}>Histoires</a>
             <div className="mobile-only-actions" style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
               <button className="secondary-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setMenuOpen(false); onAuth('login'); }}>
@@ -890,12 +893,12 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
         </div>
 
         <div className="hero-copy">
-          <span className="hero-badge"><Sparkles size={12} /> CrÃ©ez des surprises inoubliables</span>
-          <h1>CrÃ©ez des souvenirs<br /><em>qui restent.</em></h1>
-          <p>LoveCraft transforme vos mots et vos moments en expÃ©riences digitales intimes, belles et inoubliables.</p>
+          <span className="hero-badge"><Sparkles size={12} /> Créez des surprises inoubliables</span>
+          <h1>Créez des souvenirs<br /><em>qui restent.</em></h1>
+          <p>LoveCraft transforme vos mots et vos moments en expériences digitales intimes, belles et inoubliables.</p>
           <div className="hero-actions">
             <button id="hero-cta-btn" className="primary-btn hero-cta" onClick={() => onAuth('signup')}>
-              CrÃ©er ma surprise <ArrowRight size={16} />
+              Créer ma surprise <ArrowRight size={16} />
             </button>
             <Link id="hero-story-link" className="ghost-btn" href="/story">Voir notre histoire <ArrowRight size={14} /></Link>
           </div>
@@ -904,8 +907,8 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
               {['T', 'S', 'M', 'R'].map((l, i) => <span key={i} className="trust-av">{l}</span>)}
             </div>
             <div>
-              <div className="trust-stars">â˜…â˜…â˜…â˜…â˜…</div>
-              <span>DÃ©jÃ  choisi par <strong>2 400+ crÃ©ateurs</strong></span>
+              <div className="trust-stars">★★★★★</div>
+              <span>Déjà choisi par <strong>2 400+ créateurs</strong></span>
             </div>
           </div>
         </div>
@@ -935,49 +938,49 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
 
       <div className="proof-bar">
         <div className="proof-bar-inner">
-          <span>âŸ¶ Plus qu'un message</span>
-          <span>â˜… 4.9/5 satisfaction</span>
-          <span>â¤ 2 400+ histoires crÃ©Ã©es</span>
-          <span>âœ“ Gratuit, sans carte bancaire</span>
+          <span>⟶ Plus qu'un message</span>
+          <span>★ 4.9/5 satisfaction</span>
+          <span>♥ 2 400+ histoires créées</span>
+          <span>✓ Gratuit, sans carte bancaire</span>
         </div>
       </div>
 
       <section id="fonctionnalites" className="landing-features animate-on-scroll">
         <div className="features-header">
           <span className="eyebrow">Tout ce qu'il faut</span>
-          <h2>Votre histoire mÃ©rite<br /><em>son propre univers.</em></h2>
-          <p>Pas de template impersonnel. Une expÃ©rience pensÃ©e dans les dÃ©tails pour faire naÃ®tre un vrai sourire.</p>
+          <h2>Votre histoire mérite<br /><em>son propre univers.</em></h2>
+          <p>Pas de template impersonnel. Une expérience pensée dans les détails pour faire naître un vrai sourire.</p>
         </div>
         <div className="feature-cards">
           <article className="feature-card feature-card-hero">
             <div className="feature-mockup">
               <div className="mockup-bar"><span /><span /><span /></div>
               <div className="mockup-card rose">
-                <small>Pour Ã‰loÃ¯se â™¥</small>
+                <small>Pour Éloïse ♥</small>
                 <Heart size={28} fill="currentColor" />
-                <strong>J'ai quelque chose Ã  te raconter...</strong>
+                <strong>J'ai quelque chose à te raconter...</strong>
               </div>
             </div>
             <div>
               <div className="feature-icon"><Heart size={22} /></div>
-              <h3>Un rÃ©cit qui vous ressemble</h3>
-              <p>Choisissez l'ambiance, Ã©crivez les mots justes et composez une rÃ©vÃ©lation Ã  votre image.</p>
+              <h3>Un récit qui vous ressemble</h3>
+              <p>Choisissez l'ambiance, écrivez les mots justes et composez une révélation à votre image.</p>
             </div>
           </article>
           <article className="feature-card">
             <div className="feature-icon"><QrCode size={22} /></div>
-            <h3>Partage simple et privÃ©</h3>
+            <h3>Partage simple et privé</h3>
             <p>Un lien unique et un QR code pour offrir votre surprise exactement au bon moment.</p>
           </article>
           <article className="feature-card">
             <div className="feature-icon"><BarChart3 size={22} /></div>
             <h3>Le bon moment, toujours</h3>
-            <p>Suivez les ouvertures et dÃ©couvrez quand votre histoire a Ã©tÃ© rÃ©vÃ©lÃ©e.</p>
+            <p>Suivez les ouvertures et découvrez quand votre histoire a été révélée.</p>
           </article>
           <article className="feature-card">
             <div className="feature-icon"><Check size={22} /></div>
             <h3>Simple et gratuit</h3>
-            <p>CrÃ©ez et partagez des surprises illimitÃ©es, sans abonnement ni carte bancaire.</p>
+            <p>Créez et partagez des surprises illimitées, sans abonnement ni carte bancaire.</p>
           </article>
         </div>
       </section>
@@ -985,13 +988,13 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
       <section id="processus" className="landing-steps animate-on-scroll">
         <div className="steps-header">
           <span className="eyebrow">Le rituel LoveCraft</span>
-          <h2>De l'idÃ©e Ã  l'Ã©motion<br /><em>en quelques minutes.</em></h2>
+          <h2>De l'idée à l'émotion<br /><em>en quelques minutes.</em></h2>
         </div>
         <div className="steps-row">
           {[
-            { n: '01', title: 'Imaginez', desc: 'Donnez un titre Ã  votre histoire, choisissez un thÃ¨me et posez l\'intention.' },
-            { n: '02', title: 'Ã‰crivez', desc: 'Ajoutez votre message, une question secrÃ¨te et les dÃ©tails qui comptent.' },
-            { n: '03', title: 'RÃ©vÃ©lez', desc: 'Envoyez le lien. La personne rÃ©pond, dÃ©couvre et garde ce moment avec elle.' },
+            { n: '01', title: 'Imaginez', desc: 'Donnez un titre à votre histoire, choisissez un thème et posez l\'intention.' },
+            { n: '02', title: 'Écrivez', desc: 'Ajoutez votre message, une question secrète et les détails qui comptent.' },
+            { n: '03', title: 'Révélez', desc: 'Envoyez le lien. La personne répond, découvre et garde ce moment avec elle.' },
           ].map((step, i) => (
             <div className="step-card" key={i}>
               <div className="step-number">{step.n}</div>
@@ -1005,12 +1008,12 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
 
       <section id="temoignages" className="landing-testimonials animate-on-scroll">
         <div className="testi-header">
-          <span className="eyebrow">Ils ont Ã©crit une histoire</span>
-          <h2>Des mots simples.<br /><em>Des rÃ©actions inoubliables.</em></h2>
+          <span className="eyebrow">Ils ont écrit une histoire</span>
+          <h2>Des mots simples.<br /><em>Des réactions inoubliables.</em></h2>
         </div>
         <div className="testi-carousel">
           <div className="testi-card" key={testiIdx}>
-            <div className="testi-stars">â˜…â˜…â˜…â˜…â˜…</div>
+            <div className="testi-stars">★★★★★</div>
             <p className="testi-quote">"{testimonials[testiIdx].quote}"</p>
             <div className="testi-author">
               <div className="testi-av">{testimonials[testiIdx].author[0]}</div>
@@ -1021,15 +1024,15 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
             </div>
           </div>
           <div className="testi-controls">
-            <button id="testi-prev-btn" onClick={() => setTestiIdx(i => (i - 1 + testimonials.length) % testimonials.length)} aria-label="TÃ©moignage prÃ©cÃ©dent">
+            <button id="testi-prev-btn" onClick={() => setTestiIdx(i => (i - 1 + testimonials.length) % testimonials.length)} aria-label="Témoignage précédent">
               <ChevronLeft size={18} />
             </button>
             <div className="testi-dots">
               {testimonials.map((_, i) => (
-                <button key={i} className={`testi-dot${i === testiIdx ? ' active' : ''}`} onClick={() => setTestiIdx(i)} aria-label={`TÃ©moignage ${i + 1}`} />
+                <button key={i} className={`testi-dot${i === testiIdx ? ' active' : ''}`} onClick={() => setTestiIdx(i)} aria-label={`Témoignage ${i + 1}`} />
               ))}
             </div>
-            <button id="testi-next-btn" onClick={() => setTestiIdx(i => (i + 1) % testimonials.length)} aria-label="TÃ©moignage suivant">
+            <button id="testi-next-btn" onClick={() => setTestiIdx(i => (i + 1) % testimonials.length)} aria-label="Témoignage suivant">
               <ChevronRight size={18} />
             </button>
           </div>
@@ -1041,26 +1044,78 @@ function Landing({ onAuth }: { onAuth: (mode: 'login' | 'signup') => void }) {
         <div className="cta-orb cta-orb-2" />
         <div className="cta-inner">
           <span className="eyebrow" style={{ color: 'rgba(240,200,208,0.6)' }}>Votre prochaine histoire vous attend</span>
-          <h2>Ã‰crivez quelque chose<br /><em>qu'on n'oubliera pas.</em></h2>
-          <p>CrÃ©ez gratuitement votre premiÃ¨re surprise et donnez Ã  vos mots une vraie place.</p>
+          <h2>Écrivez quelque chose<br /><em>qu'on n'oubliera pas.</em></h2>
+          <p>Créez gratuitement votre première surprise et donnez à vos mots une vraie place.</p>
           <button id="final-cta-btn" className="cta-btn" onClick={() => onAuth('signup')}>
             Commencer avec LoveCraft <ArrowRight size={16} />
           </button>
         </div>
       </section>
 
-      <footer className="landing-footer">
-        <div className="footer-inner">
-          <div className="footer-brand">
-            <Logo />
-            <span>Des souvenirs, en mieux.</span>
+      <footer className="landing-footer" style={{ background: 'var(--foreground)', padding: '60px 24px 40px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 36 }}>
+            {/* Brand column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <Logo />
+              <p style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: 13, lineHeight: 1.6, maxWidth: 280 }}>
+                La plateforme pour transformer vos plus belles émotions en surprises digitales inoubliables.
+              </p>
+            </div>
+
+            {/* Navigation Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <strong style={{ color: 'white', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Navigation</strong>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                <Link href="/" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Accueil</Link>
+                <Link href="/story" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Notre histoire</Link>
+                <button
+                  type="button"
+                  style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.65)', fontSize: 13, padding: 0, transition: 'color 0.2s' }}
+                  onClick={() => onAuth('login')}
+                >
+                  Connexion
+                </button>
+                <button
+                  type="button"
+                  style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.65)', fontSize: 13, padding: 0, transition: 'color 0.2s' }}
+                  onClick={() => onAuth('signup')}
+                >
+                  Inscription
+                </button>
+              </div>
+            </div>
+
+            {/* Legal Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <strong style={{ color: 'white', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Légal</strong>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                <Link href="/legal/terms" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Conditions d'utilisation</Link>
+                <Link href="/legal/privacy" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Politique de confidentialité</Link>
+                <Link href="/legal/cookies" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Cookies</Link>
+              </div>
+            </div>
+
+            {/* Contact Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <strong style={{ color: 'white', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contact</strong>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                <Link href="/contact" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>Contactez-nous</Link>
+                <a href="mailto:contact@lovecraft-app.com" style={{ color: 'rgba(255, 255, 255, 0.65)', transition: 'color 0.2s' }}>contact@lovecraft-app.com</a>
+              </div>
+            </div>
           </div>
-          <nav className="footer-nav">
-            <a href="#fonctionnalites">FonctionnalitÃ©s</a>
-            <a href="#processus">Comment Ã§a marche</a>
-            <Link href="/story">Notre histoire</Link>
-          </nav>
-          <small>Â© 2026 LoveCraft Â· Site crÃ©Ã© et dÃ©veloppÃ© par <a href="https://www.facebook.com/profile.php?id=61588131732811" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'inherit' }}>MEVI Cyprien</a></small>
+
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <small style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 12, margin: 0, padding: 0, border: 'none' }}>
+              © 2026 LoveCraft · Site créé et développé par <a href="https://www.facebook.com/profile.php?id=61588131732811" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'inherit' }}>MEVI Cyprien</a>
+            </small>
+            <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
+              <Link href="/legal/privacy" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Confidentialité</Link>
+              <Link href="/legal/terms" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Conditions</Link>
+              <Link href="/contact" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Support</Link>
+            </div>
+          </div>
         </div>
       </footer>
     </main>
